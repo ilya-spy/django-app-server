@@ -48,3 +48,18 @@ CREATE UNIQUE INDEX film_work_person_idx ON content.person_film_work (film_work_
 -- Искать с помощью композитного индекса
 SELECT * FROM content.person_film_work WHERE film_work_id = '24804716-0b7d-4c8f-8afe-fea8b0a890c7' 
 SELECT * FROM content.person_film_work WHERE film_work_id ='24804716-0b7d-4c8f-8afe-fea8b0a890c7' AND person_id = '0745df17-c2f4-440a-9514-e4cabc1327b4'; 
+
+CREATE TABLE IF NOT EXISTS content.genre (
+    id uuid PRIMARY KEY,
+  	name TEXT NOT NULL,
+    description TEXT,
+    created timestamp with time zone,
+    modified timestamp with time zone
+);
+
+CREATE TABLE IF NOT EXISTS content.genre_film_work (
+    id uuid PRIMARY KEY,
+    film_work_id uuid NOT NULL,
+    genre_id uuid NOT NULL,
+    created timestamp with time zone
+);
