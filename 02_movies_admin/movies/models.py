@@ -9,16 +9,21 @@ import uuid
 ### Описание миксинов
 ###
 
-class TimeStampedMixin(models.Model):
+class CreatedAtMixin(models.Model):
     # auto_now_add автоматически выставит дату создания записи 
-    created = models.DateTimeField(auto_now_add=True)
-    # auto_now изменятся при каждом обновлении записи 
-    modified = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         # Этот параметр указывает Django, что этот класс не является представлением таблицы
         abstract = True
 
+class UpdatedAtMixin(models.Model):
+    # auto_now изменятся при каждом обновлении записи 
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        # Этот параметр указывает Django, что этот класс не является представлением таблицы
+        abstract = True
 
 class UUIDMixin(models.Model):
     # Типичная модель в Django использует число в качестве id. В таких ситуациях поле не описывается в модели.
@@ -32,7 +37,7 @@ class UUIDMixin(models.Model):
 ### Описание базовых сущностей
 ###
 
-class Person(UUIDMixin, TimeStampedMixin):
+class Person(UUIDMixin, CreatedAtMixin, UpdatedAtMixin):
 
     class Gender(models.TextChoices):
         MALE = 'male', _('male')
@@ -53,7 +58,7 @@ class Person(UUIDMixin, TimeStampedMixin):
         verbose_name_plural = 'Персоны'
 
 
-class Genre(UUIDMixin, TimeStampedMixin):
+class Genre(UUIDMixin, CreatedAtMixin, UpdatedAtMixin):
 
     def __str__(self):
         return self.name
@@ -72,7 +77,7 @@ class Genre(UUIDMixin, TimeStampedMixin):
         verbose_name_plural = 'Жанры'
 
 
-class Filmwork(UUIDMixin, TimeStampedMixin):
+class Filmwork(UUIDMixin, CreatedAtMixin, UpdatedAtMixin):
 
     class FilmworkType(models.TextChoices):
         TV_SHOW  = 'tv_show',  _('tv_show')
@@ -111,29 +116,24 @@ class Filmwork(UUIDMixin, TimeStampedMixin):
 ###  Oписание отношений между базовыми сущностями
 ###
 
-class GenreFilmwork(UUIDMixin):
+class GenreFilmwork(UUIDMixin, CreatedAtMixin):
 
     def __str__(self):
         return str(self.id) 
 
     film_work = models.ForeignKey('Filmwork', on_delete=models.CASCADE)
     genre = models.ForeignKey('Genre', on_delete=models.CASCADE)
-
-    created = models.DateTimeField(auto_now_add=True)
-
     class Meta:
         db_table = "content\".\"genre_film_work" 
 
-class PersonFilmwork(UUIDMixin):
+class PersonFilmwork(UUIDMixin, CreatedAtMixin):
 
     def __str__(self):
         return self.role 
 
     film_work = models.ForeignKey('filmwork', on_delete=models.CASCADE)
     person = models.ForeignKey('person', on_delete=models.CASCADE)
+
     role = models.CharField(_('role'), max_length=255, null=True)
-
-    created = models.DateTimeField(auto_now_add=True)
-
     class Meta:
         db_table = "content\".\"person_film_work" 
