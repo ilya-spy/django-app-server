@@ -1,18 +1,16 @@
 
-from msilib.schema import tables
 import sqlite3
 import uuid, os
-from tkinter.messagebox import NO
 
 from pprint import pprint
 from datetime import datetime
 
+from collections import defaultdict 
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from dotenv import load_dotenv
 
 import psycopg2
-from psycopg2.extensions import connection as _connection
 from psycopg2.extras import DictCursor
 
 
@@ -92,10 +90,9 @@ class PersonFilmWork:
 class SQLiteLoader:
     def __init__(self, sqlite_conn):
         self.__cursor = sqlite_conn.cursor()
-        self.__data = {}
+        self.__data = defaultdict(lambda: [])
 
     def fetch_table(self, table: str, Target: object):
-        self.__data[table] = []
         # Fetch and save entire table specified
         self.__cursor.execute("SELECT * FROM {tname};".format(tname=table))
         self.__data[table] = self.__cursor.fetchall()

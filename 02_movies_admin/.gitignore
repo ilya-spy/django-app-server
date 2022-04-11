@@ -1,6 +1,6 @@
 Lib
 Scripts
 pyvenv.cfg
-*/.env
+**/.env
 **/__pycache__
-
+**/django.mo

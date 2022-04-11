@@ -1,6 +1,6 @@
 django==3.2
-flake8==4.0  # Разумеется, вам потребуется линтер :) 
-psycopg2-binary==2.9
+flake8==4.0
+psycopg2-binary==2.9.3
 python-dotenv==0.20.0
 django-split-settings==1.1.0
 django-debug-toolbar
