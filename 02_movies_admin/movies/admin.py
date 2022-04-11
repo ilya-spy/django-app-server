@@ -13,20 +13,24 @@ from .models import PersonFilmwork
 class GenreAdmin(admin.ModelAdmin):
     pass
 
+
 @admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
     # Отображение полей в списке
     list_display = ('full_name', 'gender',)
 
+
 class GenreFilmworkInline(admin.TabularInline):
     model = GenreFilmwork
+
 
 class PersonFilmworkInline(admin.TabularInline):
     model = PersonFilmwork
 
+
 @admin.register(Filmwork)
 class FilmworkAdmin(admin.ModelAdmin):
-    inlines = ( PersonFilmworkInline, GenreFilmworkInline)
+    inlines = (PersonFilmworkInline, GenreFilmworkInline)
 
     # Отображение полей в списке
     list_display = ('title', 'type', 'creation_date', 'rating',)
@@ -35,4 +39,4 @@ class FilmworkAdmin(admin.ModelAdmin):
     list_filter = ('type',)
 
     # Поиск по полям
-    search_fields = ('title', 'description', 'id') 
+    search_fields = ('title', 'description', 'id')
