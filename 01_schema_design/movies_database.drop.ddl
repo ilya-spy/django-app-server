@@ -7,4 +7,5 @@ DROP TABLE IF EXISTS content.person;
 DROP TABLE IF EXISTS content.film_work;
 
 -- Drop schema itself
-DROP SCHEMA IF EXISTS content;
+DROP SCHEMA IF EXISTS content CASCADE;
+DROP EXTENSION IF EXISTS "uuid-ossp" CASCADE;
