@@ -121,7 +121,7 @@ class Filmwork(UUIDMixin, CreatedAtMixin, UpdatedAtMixin):
 class GenreFilmwork(UUIDMixin, CreatedAtMixin):
 
     def __str__(self):
-        return str(self.id)
+        return self.genre.name + ' - ' + self.film_work.title
 
     film_work = models.ForeignKey('Filmwork', on_delete=models.CASCADE)
     genre = models.ForeignKey('Genre', on_delete=models.CASCADE)
