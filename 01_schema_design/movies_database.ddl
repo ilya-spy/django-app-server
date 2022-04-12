@@ -1,5 +1,10 @@
-CREATE SCHEMA IF NOT EXISTS content;
 
+--- Initial schema setup
+CREATE SCHEMA IF NOT EXISTS content;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+
+--- Create film_work
 CREATE TABLE IF NOT EXISTS content.film_work (
     id uuid PRIMARY KEY,
     title TEXT NOT NULL,
@@ -11,22 +16,30 @@ CREATE TABLE IF NOT EXISTS content.film_work (
     modified timestamp with time zone
 );
 
--- Устанавливаем расширения для генерации UUID
-CREATE EXTENSION "uuid-ossp";
+--- Populate yearly stub marks into film_work
+INSERT INTO content.film_work 
+    (id, title, description, type, creation_date, rating, created, modified)
+    SELECT uuid_generate_v4(),
+            'Yearly mark stub',
+            'This entry is to indicate yearly marks in film works history view',
+            case when RANDOM() < 0.4 THEN 'movie' ELSE 'tv_show' END,
+            date::DATE,
+            floor(random() * 100),
+            NOW()::DATE,
+            NOW()::DATE
+    FROM generate_series(
+    '1900-01-01'::DATE,
+    '2022-01-01'::DATE,
+    '1 year'::interval
+    ) date;
 
--- Генерируем данные в интервале с 1900 по 2021 год с шагом в час. В итоге сгенерируется 1060681 записей
-
-INSERT INTO content.film_work (id, title, type, creation_date, rating) SELECT uuid_generate_v4(), 'some name', case when RANDOM() < 0.3 THEN 'movie' ELSE 'tv_show' END , date::DATE, floor(random() * 100)
-FROM generate_series(
-  '1900-01-01'::DATE,
-  '2021-01-01'::DATE,
-  '1 hour'::interval
-) date;
-
+--- Explain and fix film_work query, using creation_date
 EXPLAIN ANALYZE SELECT * FROM content.film_work WHERE creation_date = '2020-04-01';
+CREATE INDEX IF NOT EXISTS film_work_creation_date_idx ON
+    content.film_work(creation_date);
 
-CREATE INDEX film_work_creation_date_idx ON content.film_work(creation_date);
 
+--- Create person
 CREATE TABLE IF NOT EXISTS content.person (
     id uuid PRIMARY KEY,
     full_name TEXT NOT NULL,
@@ -34,6 +47,7 @@ CREATE TABLE IF NOT EXISTS content.person (
     modified timestamp with time zone
 );
 
+--- Create person_film_work relation
 CREATE TABLE IF NOT EXISTS content.person_film_work (
     id uuid PRIMARY KEY,
     film_work_id uuid NOT NULL,
@@ -42,13 +56,12 @@ CREATE TABLE IF NOT EXISTS content.person_film_work (
     created timestamp with time zone
 );
 
--- Создадим уникальный композитный индекс (нельзя добавить персону дважды к фильму)
-CREATE UNIQUE INDEX film_work_person_idx ON content.person_film_work (film_work_id, person_id); 
+-- Put unique constraint - each person could play each role only once in each filw_work
+CREATE UNIQUE INDEX IF NOT EXISTS film_work_person_role ON
+    content.person_film_work (film_work_id, person_id, role);
 
--- Искать с помощью композитного индекса
-SELECT * FROM content.person_film_work WHERE film_work_id = '24804716-0b7d-4c8f-8afe-fea8b0a890c7' 
-SELECT * FROM content.person_film_work WHERE film_work_id ='24804716-0b7d-4c8f-8afe-fea8b0a890c7' AND person_id = '0745df17-c2f4-440a-9514-e4cabc1327b4'; 
 
+-- Create genre
 CREATE TABLE IF NOT EXISTS content.genre (
     id uuid PRIMARY KEY,
   	name TEXT NOT NULL,
@@ -57,9 +70,14 @@ CREATE TABLE IF NOT EXISTS content.genre (
     modified timestamp with time zone
 );
 
+-- Create genre_dilm_work relation
 CREATE TABLE IF NOT EXISTS content.genre_film_work (
     id uuid PRIMARY KEY,
     film_work_id uuid NOT NULL,
     genre_id uuid NOT NULL,
     created timestamp with time zone
 );
+
+-- Put unique constraint - each filmwork could reference particular genre only once
+CREATE UNIQUE INDEX IF NOT EXISTS film_work_genre ON
+    content.genre_film_work (film_work_id, genre_id);
