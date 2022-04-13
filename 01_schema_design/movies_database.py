@@ -3,9 +3,9 @@ import random
 import math
 import uuid
 import psycopg2
-import argparse
+import logging
+import pprint
 
-from pprint import pprint
 from contextlib import contextmanager
 from datetime import datetime
 from psycopg2.extras import execute_batch, DictCursor
@@ -13,22 +13,6 @@ from psycopg2.extras import execute_batch, DictCursor
 from faker import Faker
 from faker.providers import lorem, date_time
 
-fake = Faker()
-fake.add_provider(lorem)
-fake.add_provider(date_time)
-Faker.seed(0)
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--script', type=str,
-    help='runs the sql file specified')
-parser.add_argument('--person', type=int,
-    help='inserts specified num of person')
-parser.add_argument('--film_work', type=int,
-    help='inserts specified num of film_work')
-parser.add_argument('--cast', type=int,
-    help='inserts specified num of person, film_work and cast roles')
-
-args = parser.parse_args()
 
 @contextmanager
 def postgres_manager():
@@ -46,12 +30,21 @@ def postgres_manager():
 
     conn.close()
 
+logger = logging.getLogger(__name__)
 
+fake = Faker()
+fake.add_provider(lorem)
+fake.add_provider(date_time)
+Faker.seed(0)
+
+
+
+# The manager does not setup schema
+# Schema and extension must be properly managed in db sql
 class MoviesDatabaseManager:
-    def __init__(self, postgres_conn, chunk_size=50, verbose=False):
+    def __init__(self, postgres_conn, chunk_size=50):
         self.__chunk_size = chunk_size
         self.__now = datetime.utcnow()
-        self.__verbose = verbose
 
          # Disable autocommit and manual control for speed-up
         self.__connection = postgres_conn
@@ -64,16 +57,18 @@ class MoviesDatabaseManager:
         self.__film_work_id = []
 
 
+
     def run_sql_file(self, filename):
         try:
             with open(filename, 'r') as sql_file:
                 sql = sql_file.read()
-                if self.__verbose:
-                    print('### Running SQL:\n', sql)
+                logger.info(f'Running SQL:\n{sql}')
+
                 self.__cursor.execute(sql)
                 self.__connection.commit()
         except IOError:
-            print(f'MoviesDatabaseManager: can not read {filename}')
+            logger.error(f'Error: can not read {filename}')
+
 
 
     def make_person(self, num_person):
@@ -87,9 +82,8 @@ class MoviesDatabaseManager:
         execute_batch(self.__cursor, query, data, page_size=self.__chunk_size)
         self.__connection.commit()
         self.__person_id += ids
-        if self.__verbose:
-            pprint('Inserted person:')
-            pprint(data)
+        logger.info('Inserted person:')
+        logger.info(pprint.pformat(data, indent=2))
 
 
 
@@ -108,9 +102,9 @@ class MoviesDatabaseManager:
         execute_batch(self.__cursor, query, data, page_size=self.__chunk_size)
         self.__connection.commit()
         self.__film_work_id += ids
-        if self.__verbose:
-            pprint('Inserted film_work:')
-            pprint(data)
+        logger.info('Inserted film_work:')
+        logger.info(pprint.pformat(data, indent=2))
+
 
 
     def cast_person_film_work(self, num_cast):
@@ -133,27 +127,8 @@ class MoviesDatabaseManager:
 
         query = 'INSERT INTO person_film_work (id, film_work_id, person_id, role, created) \
             VALUES (%s, %s, %s, %s, %s)'
-        if self.__verbose:
-            pprint('Cast roles:')
-            pprint(person_film_work_data)
+        logger.info('Cast roles:')
+        logger.info(pprint.pformat(person_film_work_data, indent=2))
 
         execute_batch(self.__cursor, query, person_film_work_data, page_size=self.__chunk_size)
         self.__connection.commit()
-
-
-
-# Установим соединение с БД используя контекстный менеджер with.
-# В конце блока автоматически закроется курсор (cursor.close())
-# и соединение (conn.close())
-if __name__ == '__main__':
-    with postgres_manager() as connection:
-        manager = MoviesDatabaseManager(connection, verbose=True)
-
-        if args.script:
-            manager.run_sql_file(args.script)
-        if args.person:
-            manager.make_person(args.person)
-        if args.film_work:
-            manager.make_film_work(args.film_work)
-        if args.cast:
-            manager.cast_person_film_work(args.cast)

@@ -8,5 +8,6 @@ name = "pypi"
 flake8 = "4.0"
 psycopg2-binary = "2.9.3"
 python-dotenv = "0.20.0"
+faker = "13.3.4"
 
 [dev-packages]
