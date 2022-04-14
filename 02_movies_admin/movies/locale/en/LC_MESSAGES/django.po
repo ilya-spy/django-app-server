@@ -1,10 +1,9 @@
-
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-12 02:35-0700\n"
+"POT-Creation-Date: 2022-04-14 02:34-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,19 +13,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\movies\admin.py:27
+#: .\movies\admin.py:23
+msgid "genre_used_in"
+msgstr "Filmwork attributed to Genre"
+
+#: .\movies\admin.py:24
+msgid "genre_used_in_plural"
+msgstr "Filmworks attributed to Genre"
+
+#: .\movies\admin.py:43
 msgid "genre_film_work"
 msgstr "Genre"
 
-#: .\movies\admin.py:28
+#: .\movies\admin.py:44
 msgid "genre_film_work_plural"
 msgstr "Genres of FilmWork"
 
-#: .\movies\admin.py:33
+#: .\movies\admin.py:56
 msgid "role_person_film_work"
 msgstr "Role"
 
-#: .\movies\admin.py:34
+#: .\movies\admin.py:57
 msgid "role_person_film_work_plural"
 msgstr "Acting roles"
 
@@ -86,7 +93,7 @@ msgstr "Type"
 msgid "file"
 msgstr "File"
 
-#: .\movies\models.py:141
+#: .\movies\models.py:144
 msgid "role"
 msgstr "Role"
 

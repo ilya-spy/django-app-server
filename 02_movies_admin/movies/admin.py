@@ -11,17 +11,31 @@ from .models import GenreFilmwork
 from .models import PersonFilmwork
 
 
-@admin.register(Genre)
-class GenreAdmin(admin.ModelAdmin):
-    # Отображение полей в списке
-    list_display = ('name', 'description',)
-
-
 @admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
     # Отображение полей в списке
     list_display = ('full_name', 'gender',)
     search_fields = ('full_name', 'gender',)
+
+
+class GenreInline(admin.TabularInline):
+    model = GenreFilmwork
+    verbose_name = _("genre_used_in")
+    verbose_name_plural = _("genre_used_in_plural")
+
+    list_prefetch_related = (Prefetch('genre'), Prefetch('film_work'))
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related(
+            *self.list_prefetch_related
+        ).all()
+
+@admin.register(Genre)
+class GenreAdmin(admin.ModelAdmin):
+    inlines = (GenreInline,)
+
+    # Отображение полей в списке
+    list_display = ('name', 'description',)
 
 
 class GenreFilmworkInline(admin.TabularInline):

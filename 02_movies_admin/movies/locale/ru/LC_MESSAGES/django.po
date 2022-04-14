@@ -1,10 +1,9 @@
-
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-12 02:35-0700\n"
+"POT-Creation-Date: 2022-04-14 02:34-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,19 +15,27 @@ msgstr ""
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: .\movies\admin.py:27
+#: .\movies\admin.py:23
+msgid "genre_used_in"
+msgstr "Кинопроизведение в данном жанре"
+
+#: .\movies\admin.py:24
+msgid "genre_used_in_plural"
+msgstr "Кинопроизведения в данном жанре"
+
+#: .\movies\admin.py:43
 msgid "genre_film_work"
 msgstr "Жанр"
 
-#: .\movies\admin.py:28
+#: .\movies\admin.py:44
 msgid "genre_film_work_plural"
 msgstr "Жанры Кинопроизведения"
 
-#: .\movies\admin.py:33
+#: .\movies\admin.py:56
 msgid "role_person_film_work"
 msgstr "Роль"
 
-#: .\movies\admin.py:34
+#: .\movies\admin.py:57
 msgid "role_person_film_work_plural"
 msgstr "Роли участников"
 
@@ -88,7 +95,7 @@ msgstr "Тип"
 msgid "file"
 msgstr "Файл"
 
-#: .\movies\models.py:141
+#: .\movies\models.py:144
 msgid "role"
 msgstr "Роль"
 
