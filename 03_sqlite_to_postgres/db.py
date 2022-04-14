@@ -7,6 +7,7 @@ from collections import defaultdict
 from contextlib import contextmanager
 from dataclasses import astuple, fields
 from dotenv import load_dotenv
+from itertools import chain, islice
 
 import psycopg2
 from psycopg2.extras import DictCursor
@@ -46,39 +47,39 @@ def postgres_manager():
 
 
 class SQLiteLoader:
-    def __init__(self, sqlite_conn):
+    def __init__(self, sqlite_conn, chunk_size=1000):
         self.__cursor = sqlite_conn.cursor()
-        self.__data = defaultdict(lambda: [])
+        self.__chunk_size = chunk_size
+        self.__num_fetched = defaultdict(lambda: 0)
 
     def fetch_table(self, table: str, target: object):
         # Fetch and save entire table specified
         logger.info(f'Fetching: SELECT * FROM {table};')
-        self.__cursor.execute(f'SELECT * FROM {table};')
-
-        self.__data[table] = self.__cursor.fetchall()
-        if not len(self.__data[table]):
+        try:
+            self.__cursor.execute(f'SELECT * FROM {table};')
+        except sqlite3.Error as e:
+            logger.error(e)
             return
+        while True:
+            rows = self.__cursor.fetchmany(size=self.__chunk_size)
+            if not rows:
+                break
+            self.__num_fetched[table] += len(rows)
+            logger.info(f'### SQLite read: {len(rows)} rows')
 
-        # Save data into target dataclass
-        self.__data[table] = list(map(lambda fw:
-                                      target(
-                                          **dict(zip(fw.keys(), tuple(fw)))
-                                      ),
-                                      self.__data[table]))
-
-    def get_table(self, table):
-        return self.__data[table]
+            # Yield data as a target dataclass instance
+            yield from map(lambda fw:
+                            target(
+                                **dict(zip(fw.keys(), tuple(fw)))
+                            ),
+                            rows)
 
     def len_table(self, table):
-        return len(self.__data[table])
-
-    def row_table(self, table, idx):
-        if idx < self.len_table(table):
-            return self.__data[table][idx]
+        return self.__num_fetched[table]
 
 
 class PostgresSaver:
-    def __init__(self, postgres_conn, chunk_size=50):
+    def __init__(self, postgres_conn, chunk_size=1000):
         # Disable autocommit and manual control for speed-up
         self.__connection = postgres_conn
         self.__connection.autocommit = False
@@ -86,19 +87,27 @@ class PostgresSaver:
         self.__cursor = postgres_conn.cursor()
         self.__chunk_size = chunk_size
 
-    def chunks(self, lst):
-        """Yield successive n-sized chunks from lst."""
-        for i in range(0, len(lst), self.__chunk_size):
-            yield lst[i:i + self.__chunk_size]
+    def chunks(self, iterable):
+        iterator = iter(iterable)
+        for first in iterator:
+            yield chain(
+                [first],
+                islice(iterator, self.__chunk_size - 1)
+            )
 
-    def insert_table(self, table: str, values: list, target: object):
+    def insert_table(self, table: str, values: iter, target: object):
         logger.info(f'### Postgres insert: {table}')
 
         # Insert all values sliced in chunks
         for chunk in self.chunks(values):
             rows_data = [astuple(i) for i in chunk]
-            rows_fmt = ','.join(['%s'] * len(chunk))
+            # check generator is not depleted
+            if not rows_data:
+                break
+
+            rows_fmt = ','.join(['%s'] * len(rows_data))
             col_names = ','.join(field.name for field in fields(target))
+            logger.info(f'### Postgres write: {len(rows_data)} rows')
 
             src = f'''INSERT INTO content.{table} ({col_names})
                         VALUES {rows_fmt}

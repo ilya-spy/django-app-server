@@ -42,11 +42,13 @@ class Command(BaseCommand):
                     self.stdout.write(
                         self.style.SUCCESS(f'SQLite: loading {key}')
                     )
-                    loader.fetch_table(key, value)
+                    # Get generator cursor for source table rows
+                    rows_producer = loader.fetch_table(key, value)
                     self.stdout.write(
                         self.style.SUCCESS(f'Postgres: saving {key}')
                     )
-                    saver.insert_table(key, loader.get_table(key), value)
+                    # Yield chunks from generator to avoid memory overloads
+                    saver.insert_table(key, rows_producer, value)
                     self.stdout.write(
                         self.style.SUCCESS(
                             f'Succesfully inserted \
