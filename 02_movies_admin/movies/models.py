@@ -129,7 +129,7 @@ class GenreFilmwork(UUIDMixin, CreatedAtMixin):
     class Meta:
         db_table = "content\".\"genre_film_work"
 
-        # Put UNIQUE data constraint - a set of columns must be unique in each row
+        # Put UNIQUE constraint - a set of columns must be unique in each row
         unique_together = ('film_work', 'genre',)
 
 
@@ -146,5 +146,5 @@ class PersonFilmwork(UUIDMixin, CreatedAtMixin):
     class Meta:
         db_table = "content\".\"person_film_work"
 
-        # Put UNIQUE data constraint - a set of columns must be unique in each row
+        # Put UNIQUE constraint - a set of columns must be unique in each row
         unique_together = ('film_work', 'person', 'role',)

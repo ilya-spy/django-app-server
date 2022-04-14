@@ -1,21 +1,32 @@
 
 import sys
 
-from django.core.management.base import BaseCommand, CommandError
-from movies.models import Person, Genre, Filmwork, GenreFilmwork, PersonFilmwork
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
     help = 'Runs specified sql script or insert records into Django backend'
 
+    # args and corresponding methods to invoke with db manager
+    arguments_map = {
+        'film_work': 'make_film_work',
+        'person': 'make_person',
+        'script': 'run_sql_file',
+        'cast': 'cast_person_film_work',
+    }
+
     def add_arguments(self, parser):
-        parser.add_argument('--script', type=str,
+        parser.add_argument(
+            '--script', type=str,
             help='runs the sql file specified')
-        parser.add_argument('--person', type=int,
+        parser.add_argument(
+            '--person', type=int,
             help='inserts specified num of person')
-        parser.add_argument('--film_work', type=int,
+        parser.add_argument(
+            '--film_work', type=int,
             help='inserts specified num of film_work')
-        parser.add_argument('--cast', type=int,
+        parser.add_argument(
+            '--cast', type=int,
             help='inserts specified num of person, film_work and cast roles')
 
     def handle(self, *args, **options):
@@ -29,11 +40,16 @@ class Command(BaseCommand):
             manager = movies_database.MoviesDatabaseManager(
                 connection,
             )
-            if options['script']:
-                manager.run_sql_file(options['script'])
-            if options['person']:
-                manager.make_person(options['person'])
-            if options['film_work']:
-                manager.make_film_work(options['film_work'])
-            if options['cast']:
-                manager.cast_person_film_work(options['cast'])
+            for key, value in Command.arguments_map.items():
+                if options[key]:
+                    self.stdout.write(
+                        self.style.SUCCESS(f'Django backend: importing {key}')
+                    )
+                    proc = getattr(manager, value)
+                    proc(options[key])
+
+                    self.stdout.write(
+                        self.style.SUCCESS(
+                            f'Django backend: succesfully processed {key}'
+                        )
+                    )

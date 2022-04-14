@@ -3,8 +3,8 @@ import factory
 import random
 
 from django.contrib.auth.models import User
-from movies.models import Person, Genre, Filmwork, GenreFilmwork, PersonFilmwork
-
+from movies.models import Person, Genre, Filmwork
+from movies.models import GenreFilmwork, PersonFilmwork
 
 
 # Django core entities
@@ -16,7 +16,6 @@ class UserFactory(factory.django.DjangoModelFactory):
     email = factory.Faker('email')
     first_name = factory.Faker('first_name')
     last_name = factory.Faker('last_name')
-
 
 
 # Application base entities
@@ -32,7 +31,7 @@ class GenreFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Genre
 
-    name = factory.Faker('text', max_nb_chars=10).split(' ')[0]
+    name = factory.Faker('text', max_nb_chars=10)
     description = factory.Faker('text', max_nb_chars=30)
 
 
@@ -42,13 +41,13 @@ class FilmworkFactory(factory.django.DjangoModelFactory):
 
     title = factory.Faker('text', max_nb_chars=30)
     description = factory.Faker('text', max_nb_chars=120)
-    
-    creation_date = factory.Faker('date_between', start_date = '-50y')
-    rating = factory.Faker('pyfloat', left_digits=2, right_digits=1, positive=True)
+
+    creation_date = factory.Faker('date_between', start_date='-50y')
+    rating = factory.Faker(
+        'pyfloat', left_digits=2, right_digits=1, positive=True)
     file_path = factory.Faker('file_path', extension='mkv')
 
     type = random.choice(['movie', 'movie', 'tv_show'])
-
 
 
 # Application entitites relation
@@ -68,7 +67,8 @@ class PersonFilmworkFactory(factory.django.DjangoModelFactory):
     film_work = factory.SubFactory(FilmworkFactory)
 
     role = random.choice(
-        ['actor' ] * 3 + ['producer', 'writer', 'director', 'operator', 'composer']
+        ['actor'] * 3 +
+        ['producer', 'writer', 'director', 'operator', 'composer']
     )
 
 

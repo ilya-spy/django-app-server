@@ -1,15 +1,17 @@
 
-from asyncio.log import logger
 import sys
 
 from django.core.management.base import BaseCommand
+
 
 class Command(BaseCommand):
     help = 'Imports the embedded SQLite database to Django backend'
 
     def add_arguments(self, parser):
-        parser.add_argument('--sqlite', type=str, required=True,
-            help='imports specified SQLite db contents into Django backend')
+        parser.add_argument(
+            '--sqlite', type=str, required=True,
+            help='imports specified SQLite db contents into Django backend'
+        )
 
     def handle(self, *args, **options):
         sys.path.append('../03_sqlite_to_postgres')

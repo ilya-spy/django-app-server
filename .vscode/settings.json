@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./03_sqlite_to_postgres",
+        "./01_schema_design"
+    ]
+}

@@ -24,7 +24,6 @@ class PersonAdmin(admin.ModelAdmin):
     search_fields = ('full_name', 'gender',)
 
 
-
 class GenreFilmworkInline(admin.TabularInline):
     model = GenreFilmwork
     verbose_name = _("genre_film_work")
@@ -57,7 +56,7 @@ class FilmworkAdmin(admin.ModelAdmin):
     inlines = (PersonFilmworkInline, GenreFilmworkInline)
 
     # Отображение полей в списке
-    list_display = ('title', 'type', 'creation_date', 'rating',)
+    list_display = ('title', 'description', 'type', 'creation_date', 'rating',)
 
     # Фильтрация в списке
     list_filter = ('type',)

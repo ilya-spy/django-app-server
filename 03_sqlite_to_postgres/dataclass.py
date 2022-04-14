@@ -15,7 +15,6 @@ fake.add_provider(date_time)
 Faker.seed(0)
 
 
-
 @dataclass
 class FilmWork:
     # movie = FilmWork(title='movie', description='new movie', rating=0.0)
@@ -63,7 +62,9 @@ class Person:
     full_name: str
     created_at: datetime
     updated_at: datetime
-    gender: str = field(default_factory=lambda: random.choice(['male', 'female']))
+    gender: str = field(
+        default_factory=lambda: random.choice(['male', 'female'])
+    )
     id: uuid.UUID = field(default_factory=uuid.uuid4)
 
 

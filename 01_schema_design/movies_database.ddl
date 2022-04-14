@@ -21,7 +21,9 @@ CREATE TABLE IF NOT EXISTS content.film_work (
 );
 
 --- Explain and fix film_work query, using creation_date
-EXPLAIN ANALYZE SELECT * FROM content.film_work WHERE creation_date = '2020-04-01';
+EXPLAIN ANALYZE 
+SELECT * FROM content.film_work WHERE creation_date = '2020-04-01';
+
 CREATE INDEX IF NOT EXISTS film_work_creation_date_idx ON
     content.film_work(creation_date);
 
@@ -43,7 +45,8 @@ CREATE TABLE IF NOT EXISTS content.person_film_work (
     created timestamp with time zone
 );
 
--- Put unique constraint - each person could play each role only once in each filw_work
+-- Put unique constraint
+-- each person could play each role only once in each filw_work
 CREATE UNIQUE INDEX IF NOT EXISTS film_work_person_role ON
     content.person_film_work (film_work_id, person_id, role);
 
@@ -57,7 +60,7 @@ CREATE TABLE IF NOT EXISTS content.genre (
     modified timestamp with time zone
 );
 
--- Create genre_dilm_work relation
+-- Create genre_film_work relation
 CREATE TABLE IF NOT EXISTS content.genre_film_work (
     id uuid PRIMARY KEY,
     film_work_id uuid NOT NULL,
@@ -65,6 +68,7 @@ CREATE TABLE IF NOT EXISTS content.genre_film_work (
     created timestamp with time zone
 );
 
--- Put unique constraint - each filmwork could reference particular genre only once
+-- Put unique constraint
+-- each filmwork could reference particular genre only once
 CREATE UNIQUE INDEX IF NOT EXISTS film_work_genre ON
     content.genre_film_work (film_work_id, genre_id);
