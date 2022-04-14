@@ -1,5 +1,6 @@
 
 import sys
+import time
 
 from django.core.management.base import BaseCommand
 
@@ -37,6 +38,7 @@ class Command(BaseCommand):
                     'person_film_work': PersonFilmWork,
                 }
 
+                start_time = time.time()
                 for key, value in table_map.items():
                     # Import from SQLite into runtime dataclass
                     self.stdout.write(
@@ -55,3 +57,6 @@ class Command(BaseCommand):
                                 {loader.len_table(key)} records'
                         )
                     )
+                self.stdout.write(
+                    self.style.SUCCESS(f'--- {time.time() - start_time} seconds ---')
+                )

@@ -1,0 +1,17 @@
+
+# Указываем образ, от которого берётся наследование
+FROM ubuntu:18.04
+
+WORKDIR /srv
+RUN groupadd -r web && useradd -d /srv -r -g web web \
+    && chown web:web -R /srv
+
+USER web
+
+# Обновляем индекс пакетов
+RUN apt update -y
+# Устанавливаем интерпретатор
+RUN apt install -y python3
+
+# Указываем команду, которая должна выполниться при старте контейнера
+CMD ["python3"]

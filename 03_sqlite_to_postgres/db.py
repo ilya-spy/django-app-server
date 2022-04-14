@@ -1,4 +1,5 @@
 
+from lib2to3.pgen2.token import RARROW
 import logging
 import sqlite3
 import os
@@ -68,11 +69,7 @@ class SQLiteLoader:
             logger.info(f'### SQLite read: {len(rows)} rows')
 
             # Yield data as a target dataclass instance
-            yield from map(lambda fw:
-                            target(
-                                **dict(zip(fw.keys(), tuple(fw)))
-                            ),
-                            rows)
+            yield from [target(**row) for row in rows]
 
     def len_table(self, table):
         return self.__num_fetched[table]
