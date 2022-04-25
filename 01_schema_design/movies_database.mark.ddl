@@ -13,7 +13,8 @@ INSERT INTO content.film_work
     SELECT uuid_generate_v4(),
             'Yearly mark stub',
             '',
-            case when RANDOM() < 0.4 THEN 'movie' ELSE 'tv_show' END,
+             --- case when RANDOM() < 0.4 THEN 'movie' ELSE 'tv_show' END
+            'movie',
             date::DATE,
             0.0,
             NOW()::DATE,
