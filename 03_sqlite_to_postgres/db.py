@@ -1,5 +1,4 @@
 
-from lib2to3.pgen2.token import RARROW
 import logging
 import sqlite3
 import os
@@ -7,13 +6,12 @@ import os
 from collections import defaultdict
 from contextlib import contextmanager
 from dataclasses import astuple, fields
-from dotenv import load_dotenv
 from itertools import chain, islice
 
 import psycopg2
 from psycopg2.extras import DictCursor
 
-
+from dotenv import load_dotenv
 load_dotenv()
 logger = logging.getLogger(__name__)
 
@@ -35,11 +33,11 @@ def sqlite_manager(dbfile):
 @contextmanager
 def postgres_manager():
     dsl = {
-        'dbname':   os.environ.get('DB_NAME'),
-        'user':     os.environ.get('DB_USER'),
-        'password': os.environ.get('DB_PASSWORD'),
-        'host':     os.environ.get('DB_HOST', '127.0.0.1'),
-        'port':     os.environ.get('DB_PORT', 5432),
+        'dbname':   os.environ.get('POSTGRES_DB'),
+        'user':     os.environ.get('POSTGRES_USER'),
+        'password': os.environ.get('POSTGRES_PASSWORD'),
+        'host':     os.environ.get('POSTGRES_HOST', '127.0.0.1'),
+        'port':     os.environ.get('POSTGRES_PORT', 5432),
     }
     conn = psycopg2.connect(**dsl, cursor_factory=DictCursor)
     yield conn

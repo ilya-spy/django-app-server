@@ -2,7 +2,6 @@
 import random
 import math
 import uuid
-import psycopg2
 import logging
 import pprint
 
@@ -12,24 +11,6 @@ from psycopg2.extras import execute_batch, DictCursor
 
 from faker import Faker
 from faker.providers import lorem, date_time
-
-
-@contextmanager
-def postgres_manager():
-    # Подготавливаем DSN (Data Source Name) для подключения к БД Postgres
-    dsn = {
-        'dbname': 'movies_database',
-        'user': 'app',
-        'password': '123qwe',
-        'host': 'localhost',
-        'port': 5432,
-        # Работаем как с данными Джанго (public), так и приложения (content)
-        'options': '-c search_path=public,content',
-    }
-    conn = psycopg2.connect(**dsn, cursor_factory=DictCursor)
-    yield conn
-
-    conn.close()
 
 
 logger = logging.getLogger(__name__)

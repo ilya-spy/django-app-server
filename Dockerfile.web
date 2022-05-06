@@ -1,0 +1,23 @@
+
+# this is to showcase docker layers approach to minimize layers delta
+# image names should be unified in composer
+FROM django.app.server.base
+
+# each service use its specific user
+
+# create directory for the user
+RUN mkdir -p /home/web
+
+
+# create the group and the user
+RUN addgroup -S web && adduser -S web -G web
+RUN chown web:web -R /home/web
+RUN chown web:web -R /var/www/
+
+# set server user and homedir
+USER web
+
+ENV HOME /home/web
+
+WORKDIR /var/www/
+RUN pipenv install

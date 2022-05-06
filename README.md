@@ -1,12 +1,28 @@
-# Greetings traveller
+### Welcome to django-app-server package
 
-Мы рады, что вы приступили к выполнению 1 задания из курса Middle Python-разработчик.
+This package serves as a pre-configured dockerised django web data management app.
+It uses nginx as a static web reverse proxy for fast processing,
+django to implement apis and views, and postgres db for persistent storage
  
-Описание структуры и порядок выполнения проекта:
-1. `schema_design` - раздел c материалами для архитектуры базы данных.
-2. `movies_admin` - раздел с материалами для панели администратора.
-3. `sqlite_to_postgres` - раздел с материалами по миграции данных.
+Root directory contains services available to deploy.
+Each service has corresponding Dockerfile.
+Alltogether everything could be deployed as a web/app/db cluster automatically.
 
-Напоминаем, что все три части работы нужно сдавать на ревью одновременно.
+Good luck in exploring django-app-server!
 
-Успехов!
+### Full Re-build docker images bundle
+`docker build --no-cache -f Dockerfile.base -t django.app.server.base .`
+`docker-compose build --force-rm --no-cache`
+
+### Incremental build bundle
+`docker build -f Dockerfile.base -t django.app.server.base .`
+`docker-compose build`
+
+### Run docker composer on a local server
+`docker-compose up -d [ --build ]`
+
+### Superuser app is created for you. Need to activate with password
+`docker exec -it admin_panel_app_1 pipenv run python manage.py changepassword app`
+
+### Bring docker bundle instance down amd remove volumes
+`docker-compose down -v --remove-orphans`

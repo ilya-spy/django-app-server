@@ -23,4 +23,5 @@ INSERT INTO content.film_work
     '1900-01-01'::DATE,
     '2022-01-01'::DATE,
     '1 year'::interval
-    ) date;
+    ) date
+    WHERE NOT EXISTS (SELECT creation_date FROM content.film_work);

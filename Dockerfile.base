@@ -2,20 +2,22 @@
 # set baseline server image
 FROM python:3.9.6-alpine
 
-# set web group and permissions
-RUN groupadd -r web && useradd -d /usr/src/srv -r -g web web \
-    && chown web:web -R /usr/src/srv
+# configure python environment 
+RUN pip install --upgrade pip
+RUN pip install pipenv
 
-# set server user and homedir
-USER web
-WORKDIR /usr/src/srv
-
-# do not copy compiled files to image
-ENV PYTHONDONTWRITEBYTECODE 1
+# set to not copy compiled files to image
+# this is inherited to children as well
 ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE 1
 
-# copy project
-COPY . .
+# set environments here as env_file isnt working on windows:
+RUN env
 
-# set shell as interactive entrypoint
-CMD ["bash"]
+# copy source for all services from docker host context into container
+COPY ./01_schema_design          /usr/src/srv/01_schema_design
+COPY ./02_movies_admin           /usr/src/srv/02_movies_admin
+COPY ./03_sqlite_to_postgres     /usr/src/srv/03_sqlite_to_postgres
+
+# stamp src copy done
+RUN echo Easy stuff done. Jedi business. >> /usr/src/srv/copy.done

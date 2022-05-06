@@ -1,2 +1,5 @@
 
 **/__pycache__
+
+# force environment settings out of container
+.env

@@ -1,3 +1,6 @@
 
 **/__pycache__
 **/django.mo
+
+# force environment settings out of container
+.env

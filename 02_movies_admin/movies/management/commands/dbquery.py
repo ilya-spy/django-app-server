@@ -33,10 +33,14 @@ class Command(BaseCommand):
         sys.path.append('../01_schema_design')
         import movies_database
 
+        sys.path.append('../03_sqlite_to_postgres')
+        import db
+
+
         # Установим соединение с БД используя контекстный менеджер with.
         # В конце блока автоматически закроется курсор (cursor.close())
         # и соединение (conn.close())
-        with movies_database.postgres_manager() as connection:
+        with db.postgres_manager() as connection:
             manager = movies_database.MoviesDatabaseManager(
                 connection,
             )
