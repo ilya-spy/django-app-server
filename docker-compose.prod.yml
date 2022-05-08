@@ -15,12 +15,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.app
+    volumes:
+      - static:/usr/src/srv/02_movies_admin/static
     environment:
     # production config
-      - DEBUG=False
-    # django production
-      - DJANGO_PORT=$DJANGO_PORT
-      - DJANGO_HOST=$DJANGO_HOST
+      - DEBUG=True
+      - CSRF_TRUSTED_ORIGINS=$CSRF_TRUSTED_ORIGINS
     # production config - expose application port only internally for web service
     expose:
       - $DJANGO_PORT
@@ -32,9 +32,14 @@ services:
       context: .
       dockerfile: Dockerfile.web
     # production config - map-through http to host
+    volumes:
+      - static:/var/www/static
     networks:
     - backend
     ports:
-    - 80:80
+    - 8000:8000
     depends_on:
       - app
+
+volumes:
+  static:

@@ -38,7 +38,7 @@ class MoviesApiMixin:
 
         del movie['created_at']
         del movie['updated_at']
-        movie['genres'] = movie['genre']
+        movie['genres'] = list(filter(lambda g: g, movie['genre']))
         del movie['genre']
         del movie['file_path']
         
@@ -51,9 +51,14 @@ class MoviesListApi(MoviesApiMixin, ListView):
         paginator, page, queryset, is_paginated = self.paginate_queryset(
                 list(self.get_queryset()), 50)
 
-        prev = int(self.request.GET.get('page')) \
-            if self.request.GET.get('page') else 1
-        next = prev + 1 if prev + 1 < paginator.num_pages else None
+        try:
+            page = int(self.request.GET.get('page'))
+        except:
+            page = paginator.num_pages \
+                if self.request.GET.get('page') == 'last' else 1
+
+        prev = page - 1 if page > 1 else None
+        next = page + 1 if page < paginator.num_pages else None
 
         context = {
             'count':  paginator.count,

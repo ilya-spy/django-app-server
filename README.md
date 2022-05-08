@@ -19,10 +19,10 @@ Good luck in exploring django-app-server!
 `docker-compose build`
 
 #### Run docker composer on a local server (development environment)
-`docker-compose up -d -f docker-compose.yml -f docker-compose.dev.yml [ --build ]`
+`docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d [ --build ]`
 
 #### Run docker composer prepare for internet (production environment)
-`docker-compose up -d -f docker-compose.yml -f docker-compose.prod.yml [ --build ]`
+`docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d [ --build ]`
 
 #### Superuser app is created for you. To change password
 `docker exec -it admin_panel-app-1 pipenv run python manage.py changepassword app`
@@ -31,7 +31,7 @@ Good luck in exploring django-app-server!
 `docker exec -it admin_panel-app-1 pipenv run python manage.py dbimport --sqlite ../03_sqlite_to_postgres/db.sqlite`
 
 #### Bring docker bundle instance down amd remove volumes (WARNING: erase data)
-`docker-compose down -v --remove-orphans`
+`docker-compose down --remove-orphans [ -v ] [ --rmi all ]`
 
 <br/>
 

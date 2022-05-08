@@ -9,7 +9,7 @@ CREATE EXTENSION "uuid-ossp" SCHEMA content;
 
 --- Populate yearly stub marks into film_work
 INSERT INTO content.film_work 
-    (id, title, description, type, creation_date, rating, created, modified)
+    (id, title, description, type, creation_date, rating, created_at, updated_at)
     SELECT uuid_generate_v4(),
             'Yearly mark stub',
             '',

@@ -9,6 +9,9 @@ RUN apk update && \
 # create directory for the user
 RUN mkdir -p /home/app
 
+# create directory for collectstatic
+RUN mkdir -p /usr/src/srv/02_movies_admin/static
+
 # create the group and the user
 RUN addgroup -S app && adduser -S app -G app
 RUN chown app:app -R /home/app && \
@@ -29,6 +32,9 @@ RUN pipenv install
 # Config Locales
 RUN pipenv run python manage.py makemessages --all && \
     pipenv run python manage.py compilemessages
+
+# Collect static files to serve
+RUN pipenv run python manage.py collectstatic --clear --no-input
 
 # copy updated entrypoint
 COPY ./02_movies_admin/entrypoint.prod.sh .
