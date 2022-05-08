@@ -1,0 +1,18 @@
+
+version: '3.8'
+
+services:
+
+  app:
+    image: django.app.server.app.prod
+    build:
+      context: .
+      dockerfile: Dockerfile.app.prod
+    environment:
+      - DEBUG=False
+
+      - DJANGO_SUPERUSER_USER=
+      - DJANGO_SUPERUSER_EMAIL=
+      - DJANGO_SUPERUSER_PASSWORD=
+
+    command: pipenv run gunicorn config.wsgi:application --bind $DJANGO_HOST:$DJANGO_PORT

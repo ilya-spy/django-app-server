@@ -13,5 +13,6 @@ factory-boy = "*"
 django = "3.2"
 django-split-settings = "1.1.0"
 django-debug-toolbar = "*"
+gunicorn = "20.1.0"
 
 [dev-packages]

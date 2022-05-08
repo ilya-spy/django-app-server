@@ -13,7 +13,7 @@ fi
 
 
 # Database content schema create
-pipenv run python manage.py migrate movies 0001
+pipenv run python manage.py migrate movies 0001 --fake-initial
 
 # Populate yearly markups
 # SQL will make sure no duplications
@@ -23,8 +23,25 @@ pipenv run python manage.py dbquery --script ../01_schema_design/movies_database
 pipenv run python manage.py migrate
 
 # Create super user
-pipenv run python manage.py createsuperuser --noinput \
-    --username $DJANGO_SUPERUSER_USER \
-    --email $DJANGO_SUPERUSER_EMAIL
+superuser () {
+    local username="$1"
+    local email="$2"
+    local password="$3"
+    cat <<EOF | pipenv run python manage.py shell
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+if not User.objects.filter(username="$username").exists():
+    User.objects.create_superuser("$username", "$email", "$password")
+    print('\nCreated superuser "{}". Django bringup done.'.format("$username"))
+else:
+    print('User "{}" exists already, not created'.format("$username"))
+EOF
+}
+
+# We use python commands in bash func to avoid errors in django on duplicated add
+superuser \
+"$DJANGO_SUPERUSER_USER" "$DJANGO_SUPERUSER_EMAIL" "$DJANGO_SUPERUSER_PASSWORD"
 
 exec "$@"

@@ -3,6 +3,7 @@ from django.contrib.postgres.aggregates import ArrayAgg
 from django.http import JsonResponse
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
+from django.db.models import Q
 
 from movies.models import Filmwork
 
@@ -15,7 +16,18 @@ class MoviesApiMixin:
         # Return films, annotaed with actors/genres
         return Filmwork.objects.annotate(
             genre=ArrayAgg('genres__name',distinct = True),
-            personnel=ArrayAgg('persons__id',distinct = True)
+            actors=ArrayAgg(
+                'persons__full_name',
+                filter=Q(personfilmwork__role='actor'),
+                distinct = True),
+            directors=ArrayAgg(
+                'persons__full_name',
+                filter=Q(personfilmwork__role='director'),
+                distinct = True),
+            writers=ArrayAgg(
+                'persons__full_name',
+                filter=Q(personfilmwork__role='writer'),
+                distinct = True)
         ).values()
 
     def render_to_response(self, context, **response_kwargs):

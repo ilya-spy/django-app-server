@@ -9,8 +9,6 @@ services:
       - POSTGRES_USER=$POSTGRES_USER
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
       - POSTGRES_DB=$POSTGRES_DB
-      - POSTGRES_HOST=$POSTGRES_HOST
-      - POSTGRES_PORT=$POSTGRES_PORT
     volumes:
       - volume_db:/var/lib/postgresql/data/
     networks:
@@ -24,18 +22,22 @@ services:
       context: .
       dockerfile: Dockerfile.app
     environment:
-      - SECRET_KEY=$DJANGO_SECRET_KEY
-      - DEBUG=$DJANGO_DEBUG
+      - SECRET_KEY=$SECRET_KEY
+      - DEBUG=$DEBUG
+      - ALLOWED_HOSTS=$ALLOWED_HOSTS
+
       - DJANGO_PORT=$DJANGO_PORT
       - DJANGO_HOST=$DJANGO_HOST
       - DJANGO_SUPERUSER_USER=$DJANGO_SUPERUSER_USER
       - DJANGO_SUPERUSER_EMAIL=$DJANGO_SUPERUSER_EMAIL
+      - DJANGO_SUPERUSER_PASSWORD=$DJANGO_SUPERUSER_PASSWORD
 
       - POSTGRES_HOST=$POSTGRES_HOST
       - POSTGRES_PORT=$POSTGRES_PORT
       - POSTGRES_USER=$POSTGRES_USER
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
       - POSTGRES_DB=$POSTGRES_DB
+
     command: pipenv run python manage.py runserver $DJANGO_HOST:$DJANGO_PORT
     volumes:
       - volume_app:/var/lib/django/data/
