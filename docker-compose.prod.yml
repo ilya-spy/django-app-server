@@ -2,17 +2,39 @@
 version: '3.8'
 
 services:
-
+  # postgres service
+  db:
+    # production config - expose databse port only internally for app service
+    expose:
+      - $POSTGRES_PORT
+  
+  # django service
   app:
-    image: django.app.server.app.prod
+    command: pipenv run gunicorn config.wsgi:application --bind $DJANGO_HOST:$DJANGO_PORT
+    image: django.app.server.app
     build:
       context: .
-      dockerfile: Dockerfile.app.prod
+      dockerfile: Dockerfile.app
     environment:
+    # production config
       - DEBUG=False
+    # django production
+      - DJANGO_PORT=$DJANGO_PORT
+      - DJANGO_HOST=$DJANGO_HOST
+    # production config - expose application port only internally for web service
+    expose:
+      - $DJANGO_PORT
 
-      - DJANGO_SUPERUSER_USER=
-      - DJANGO_SUPERUSER_EMAIL=
-      - DJANGO_SUPERUSER_PASSWORD=
-
-    command: pipenv run gunicorn config.wsgi:application --bind $DJANGO_HOST:$DJANGO_PORT
+  # nginx service
+  web:
+    image: django.app.server.web
+    build: 
+      context: .
+      dockerfile: Dockerfile.web
+    # production config - map-through http to host
+    networks:
+    - backend
+    ports:
+    - 80:80
+    depends_on:
+      - app

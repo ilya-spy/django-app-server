@@ -1,6 +1,8 @@
 
 version: '3.8'
 
+# baseline setup does not expose any ports outside docker
+# child configurations expose ports to docker/host/web as needed
 services:
 
   db:
@@ -13,17 +15,14 @@ services:
       - volume_db:/var/lib/postgresql/data/
     networks:
       - backend
-    ports:
-      - $POSTGRES_PORT:$POSTGRES_PORT
 
   app:
-    image: django.app.server.app
+    image: django.app.server.dev
     build:
       context: .
-      dockerfile: Dockerfile.app
+      dockerfile: Dockerfile.dev
     environment:
       - SECRET_KEY=$SECRET_KEY
-      - DEBUG=$DEBUG
       - ALLOWED_HOSTS=$ALLOWED_HOSTS
 
       - DJANGO_PORT=$DJANGO_PORT
@@ -37,14 +36,10 @@ services:
       - POSTGRES_USER=$POSTGRES_USER
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
       - POSTGRES_DB=$POSTGRES_DB
-
-    command: pipenv run python manage.py runserver $DJANGO_HOST:$DJANGO_PORT
     volumes:
       - volume_app:/var/lib/django/data/
     networks:
       - backend
-    ports:
-      - $DJANGO_PORT:$DJANGO_PORT
     depends_on:
       - db
 

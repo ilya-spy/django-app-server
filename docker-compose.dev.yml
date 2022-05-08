@@ -1,0 +1,26 @@
+
+version: '3.8'
+
+services:
+
+  # postgres service
+  db:
+    # dev config can map/access directly to/from host
+    ports:
+      - $POSTGRES_PORT:$POSTGRES_PORT
+
+  # django service
+  app:
+    command: pipenv run python manage.py runserver $DJANGO_HOST:$DJANGO_PORT
+    environment:
+    # debug config
+      - DEBUG=$DEBUG
+    # django initial setup config
+      - DJANGO_PORT=$DJANGO_PORT
+      - DJANGO_HOST=$DJANGO_HOST
+      - DJANGO_SUPERUSER_USER=$DJANGO_SUPERUSER_USER
+      - DJANGO_SUPERUSER_EMAIL=$DJANGO_SUPERUSER_EMAIL
+      - DJANGO_SUPERUSER_PASSWORD=$DJANGO_SUPERUSER_PASSWORD
+    # dev config can map/access directly to/from host
+    ports:
+      - $DJANGO_PORT:$DJANGO_PORT

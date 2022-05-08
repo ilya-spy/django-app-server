@@ -19,10 +19,10 @@ Good luck in exploring django-app-server!
 `docker-compose build`
 
 #### Run docker composer on a local server (development environment)
-`docker-compose up -d [ --build ]`
+`docker-compose up -d -f docker-compose.yml -f docker-compose.dev.yml [ --build ]`
 
 #### Run docker composer prepare for internet (production environment)
-`docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d`
+`docker-compose up -d -f docker-compose.yml -f docker-compose.prod.yml [ --build ]`
 
 #### Superuser app is created for you. To change password
 `docker exec -it admin_panel-app-1 pipenv run python manage.py changepassword app`
@@ -38,6 +38,7 @@ Good luck in exploring django-app-server!
 ### Run database service standalone
 Run docker compose first to create shared volumes and networks  
 Run database instance before spawning up the application server  
+<br/>
 `docker volume create --name admin_panel_volume_db`
 
 `docker run -d --name admin_panel-db-1 --network admin_panel_backend -p 5432:5432
@@ -49,7 +50,8 @@ Run database instance before spawning up the application server
 
 ### Run application server standalone
 Run docker compose first to create shared volumes and networks  
-Run database instance before spawning up the application server
+Run database instance before spawning up the application server  
+<br/>
 `docker volume create --name admin_panel_volume_app`
 
 `docker run -d --name admin_panel-app-1 --network admin_panel_backend -p 5000:5000
