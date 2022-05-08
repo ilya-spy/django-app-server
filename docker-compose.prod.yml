@@ -2,17 +2,44 @@
 version: '3.8'
 
 services:
-
+  # postgres service
+  db:
+    # production config - expose databse port only internally for app service
+    expose:
+      - $POSTGRES_PORT
+  
+  # django service
   app:
-    image: django.app.server.app.prod
+    command: pipenv run gunicorn config.wsgi:application --bind $DJANGO_HOST:$DJANGO_PORT
+    image: django.app.server.app
     build:
       context: .
-      dockerfile: Dockerfile.app.prod
+      dockerfile: Dockerfile.app
+    volumes:
+      - static:/usr/src/srv/02_movies_admin/static
     environment:
-      - DEBUG=False
+    # production config
+      - DEBUG=True
+      - CSRF_TRUSTED_ORIGINS=$CSRF_TRUSTED_ORIGINS
+    # production config - expose application port only internally for web service
+    expose:
+      - $DJANGO_PORT
 
-      - DJANGO_SUPERUSER_USER=
-      - DJANGO_SUPERUSER_EMAIL=
-      - DJANGO_SUPERUSER_PASSWORD=
+  # nginx service
+  web:
+    image: django.app.server.web
+    build: 
+      context: .
+      dockerfile: Dockerfile.web
+    # production config - map-through http to host
+    volumes:
+      - static:/var/www/static
+    networks:
+    - backend
+    ports:
+    - 8000:8000
+    depends_on:
+      - app
 
-    command: pipenv run gunicorn config.wsgi:application --bind $DJANGO_HOST:$DJANGO_PORT
+volumes:
+  static:
