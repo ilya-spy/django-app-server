@@ -1,43 +1,17 @@
 
 # this is to showcase docker layers approach to minimize layers delta
 # image names should be unified in composer
-FROM django.app.server.base
+FROM django.app.server.make
 
-RUN apk update && \
-    apk add gettext
+# copy hot updates to source, not requiring rebuild
+COPY ./01_schema_design          /usr/src/srv/01_schema_design
+COPY ./02_movies_admin           /usr/src/srv/02_movies_admin
+COPY ./03_sqlite_to_postgres     /usr/src/srv/03_sqlite_to_postgres
 
-# create directory for the user
-RUN mkdir -p /home/app
-
-# create directory for collectstatic
-RUN mkdir -p /usr/src/srv/02_movies_admin/static
-
-# create the group and the user
-RUN addgroup -S app && adduser -S app -G app
-RUN chown app:app -R /home/app && \
-    chown app:app -R /usr/src/srv/02_movies_admin
-
+# workaround permissions
+USER root
+RUN chown app:app -R /usr/src/srv
 USER app
-ENV HOME /home/app
-ENV DATABASE postgres
-
-ENV HOSTNAME app
-ENV ALLOWED_HOSTS 127.0.0.1
-RUN env
-
-# work with django app service
-WORKDIR /usr/src/srv/02_movies_admin
-RUN pipenv install
-
-# Config Locales
-RUN pipenv run python manage.py makemessages --all && \
-    pipenv run python manage.py compilemessages
-
-# Collect static files to serve
-RUN pipenv run python manage.py collectstatic --clear --no-input
-
-# copy updated entrypoint
-COPY ./02_movies_admin/entrypoint.prod.sh .
 
 # run entrypoint.sh
 ENTRYPOINT ["./entrypoint.prod.sh"]

@@ -11,17 +11,15 @@ Alltogether, services could be deployed as a web/app/db cluster automatically, u
 Good luck in exploring django-app-server!  
 
 #### Full rebuild docker composer bundle
-`docker build --no-cache -f Dockerfile.base -t django.app.server.base .`  
 `docker-compose build --force-rm --no-cache`
 
 #### Incremental build bundle
-`docker build -f Dockerfile.base -t django.app.server.base .`  
 `docker-compose build`
 
-#### Run docker composer on a local server (development environment)
+#### Run build stages and development server (local environment)
 `docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d [ --build ]`
 
-#### Run docker composer prepare for internet (production environment)
+#### Run composer services prepare for internet (production environment)
 `docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d [ --build ]`
 
 #### Superuser app is created for you. To change password
@@ -30,18 +28,21 @@ Good luck in exploring django-app-server!
 #### Import test films data
 `docker exec -it admin_panel-app-1 pipenv run python manage.py dbimport --sqlite ../03_sqlite_to_postgres/db.sqlite`
 
+### Make locales
+`docker exec -it admin_panel-app-1 pipenv run python manage.py makemessages --all`  
+`docker exec -it admin_panel-app-1 pipenv run python manage.py compilemessages`
+
 #### Bring docker bundle instance down amd remove volumes (WARNING: erase data)
 `docker-compose down --remove-orphans [ -v ] [ --rmi all ]`
 
 <br/>
 
 ### Run database service standalone
-Run docker compose first to create shared volumes and networks  
 Run database instance before spawning up the application server  
 <br/>
 `docker volume create --name admin_panel_volume_db`
 
-`docker run -d --name admin_panel-db-1 --network admin_panel_backend -p 5432:5432
+`docker run -d --name admin_panel-db-1 -p 5432:5432
   -v admin_panel_volume_db:/var/lib/postgresql/data
   -e POSTGRES_PASSWORD=123qwe
   -e POSTGRES_USER=app
@@ -49,12 +50,11 @@ Run database instance before spawning up the application server
   postgres:13.0-alpine`
 
 ### Run application server standalone
-Run docker compose first to create shared volumes and networks  
 Run database instance before spawning up the application server  
 <br/>
 `docker volume create --name admin_panel_volume_app`
 
-`docker run -d --name admin_panel-app-1 --network admin_panel_backend -p 5000:5000
+`docker run -d --name admin_panel-app-1 -p 5000:5000
   -v admin_panel_volume_app:/var/lib/django/data
   -e SECRET_KEY='django-insecure-+4d=$n@a)f#6nib1chzrotc*=7r%_womjssj5+_%tjg2ch@x=='
   -e ALLOWED_HOSTS='127.0.0.1 localhost *'
