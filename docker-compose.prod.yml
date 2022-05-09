@@ -7,19 +7,19 @@ services:
     # production config - expose databse port only internally for app service
     expose:
       - $POSTGRES_PORT
-  
+
   # django service
   app:
-    command: pipenv run gunicorn config.wsgi:application --bind $DJANGO_HOST:$DJANGO_PORT
     image: django.app.server.app
     build:
       context: .
       dockerfile: Dockerfile.app
+    command: pipenv run gunicorn config.wsgi:application --bind $DJANGO_HOST:$DJANGO_PORT
     volumes:
       - static:/usr/src/srv/02_movies_admin/static
     environment:
     # production config
-      - DEBUG=True
+      - DEBUG=False
       - CSRF_TRUSTED_ORIGINS=$CSRF_TRUSTED_ORIGINS
     # production config - expose application port only internally for web service
     expose:

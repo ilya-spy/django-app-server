@@ -1,0 +1,64 @@
+
+# Development setup is intended to rebuild everything and run dev server
+# Production would pick up build files and quickly run without extra steps
+
+# set baseline server image
+FROM python:3.9.6-alpine
+
+# configure python environment 
+RUN pip install --upgrade pip
+RUN pip install pipenv
+
+RUN apk update && \
+    apk add gettext
+
+# set to not copy compiled files to image
+# this is inherited to children as well
+ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE 1
+
+# create the group and the user
+RUN addgroup -S app && adduser -S app -G app
+
+
+# create directory for the app user and service
+RUN mkdir -p /home/app
+RUN mkdir -p /usr/src/srv/02_movies_admin/static
+
+# install dependencies before copying source
+WORKDIR /usr/src/srv/02_movies_admin
+RUN chown app:app -R /usr/src/srv
+
+ENV ALLOWED_HOSTS 127.0.0.1
+USER app
+
+COPY ./02_movies_admin/Pipfile* .
+RUN pipenv install
+
+# stamp src copy done
+RUN echo Easy stuff done. Jedi business. >> /usr/src/srv/copy.done
+
+
+# copy source for required services
+COPY ./01_schema_design          /usr/src/srv/01_schema_design
+COPY ./02_movies_admin           /usr/src/srv/02_movies_admin
+COPY ./03_sqlite_to_postgres     /usr/src/srv/03_sqlite_to_postgres
+
+# workaround permissions
+USER root
+RUN chown app:app -R /usr/src/srv
+USER app
+
+# Collect static files to serve
+RUN pipenv run python manage.py collectstatic --clear --no-input
+
+# Config Locales
+RUN pipenv run python manage.py makemessages --all && \
+    pipenv run python manage.py compilemessages
+
+ENV DATABASE postgres
+ENV HOSTNAME app
+RUN env
+
+# run entrypoint.sh
+ENTRYPOINT ["./entrypoint.make.sh"]

@@ -2,15 +2,16 @@
 # this is to showcase docker layers approach to minimize layers delta
 # image names should be unified in composer
 FROM nginx:1.21-alpine
-RUN rm /etc/nginx/conf.d/default.conf
 
 # Update nginx config
 COPY ./04_nginx/nginx.conf /etc/nginx/
-COPY ./04_nginx/conf.d/nginx.conf  /etc/nginx/conf.d/nginx.conf
+COPY ./04_nginx/conf.d  /etc/nginx/conf.d
 
 # create directory for the user
 RUN mkdir -p /home/web
-RUN mkdir -p /var/www
+
+# web working files entrypoint
+WORKDIR /var/www/
 
 # create the group and the user
 RUN addgroup -S web && adduser -S web -G web
@@ -20,15 +21,9 @@ RUN chown web:web -R /var/www
 # each service use its specific user
 # set server user and homedir
 
-# nginx wpuld fail to initialize as non-root
-# USER web
-
 # environment settings
 ENV HOME /home/web
 RUN env
 
 # Cppy web server files
 COPY ./04_nginx/www /var/www
-
-# web working files entrypoint
-WORKDIR /var/www/
