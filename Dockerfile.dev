@@ -61,4 +61,4 @@ ENV HOSTNAME app
 RUN env
 
 # run entrypoint.sh
-ENTRYPOINT ["./entrypoint.make.sh"]
+ENTRYPOINT ["./entrypoint.dev.sh"]

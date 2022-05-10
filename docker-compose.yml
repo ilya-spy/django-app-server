@@ -17,7 +17,10 @@ services:
       - backend
 
   app:
-    image: django.app.server.make
+    image: django.app.server.dev
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     environment:
       - SECRET_KEY=$SECRET_KEY
       - ALLOWED_HOSTS=$ALLOWED_HOSTS

@@ -1,7 +1,7 @@
 
 # this is to showcase docker layers approach to minimize layers delta
 # image names should be unified in composer
-FROM django.app.server.make
+FROM django.app.server.dev
 
 # copy hot updates to source, not requiring rebuild
 COPY ./01_schema_design          /usr/src/srv/01_schema_design

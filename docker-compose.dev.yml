@@ -11,9 +11,6 @@ services:
 
   # django service
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile.make
     # run development server after make from sources for debugging
     command: pipenv run python manage.py runserver $DJANGO_HOST:$DJANGO_PORT
     environment:

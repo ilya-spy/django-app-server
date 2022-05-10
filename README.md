@@ -28,7 +28,7 @@ Good luck in exploring django-app-server!
 #### Import test films data
 `docker exec -it admin_panel-app-1 pipenv run python manage.py dbimport --sqlite ../03_sqlite_to_postgres/db.sqlite`
 
-### Make locales
+#### Make locales
 `docker exec -it admin_panel-app-1 pipenv run python manage.py makemessages --all`  
 `docker exec -it admin_panel-app-1 pipenv run python manage.py compilemessages`
 
