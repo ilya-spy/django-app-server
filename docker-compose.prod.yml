@@ -16,7 +16,7 @@ services:
       dockerfile: Dockerfile.app
     command: pipenv run gunicorn config.wsgi:application --bind $DJANGO_HOST:$DJANGO_PORT
     volumes:
-      - static:/usr/src/srv/02_movies_admin/static
+      - volume_static:/usr/src/srv/02_movies_admin/static
     environment:
     # production config
       - DEBUG=False
@@ -33,7 +33,7 @@ services:
       dockerfile: Dockerfile.web
     # production config - map-through http to host
     volumes:
-      - static:/var/www/static
+      - volume_static:/var/www/static
     networks:
     - backend
     ports:
@@ -42,4 +42,4 @@ services:
       - app
 
 volumes:
-  static:
+  volume_static:

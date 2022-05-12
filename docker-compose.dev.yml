@@ -2,12 +2,17 @@
 version: '3.8'
 
 services:
-
   # postgres service
   db:
     # dev config can map/access directly to/from host
     ports:
       - $POSTGRES_PORT:$POSTGRES_PORT
+  
+  # elastic service
+  search:
+    # dev config can map/access directly to/from host
+    ports:
+      - $ELASTIC_PORT:$ELASTIC_PORT
 
   # django service
   app:

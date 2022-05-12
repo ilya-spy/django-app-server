@@ -7,6 +7,7 @@ FROM django.app.server.dev
 COPY ./01_schema_design          /usr/src/srv/01_schema_design
 COPY ./02_movies_admin           /usr/src/srv/02_movies_admin
 COPY ./03_sqlite_to_postgres     /usr/src/srv/03_sqlite_to_postgres
+COPY ./05_elastic                /usr/src/srv/05_elastic
 
 # workaround permissions
 USER root

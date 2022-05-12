@@ -4,3 +4,4 @@
 
 # force environment settings out of container
 .env
+*.sync
