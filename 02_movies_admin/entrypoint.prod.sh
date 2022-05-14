@@ -11,11 +11,23 @@ then
     echo "PostgreSQL started"
 fi
 
+#  Wait check search availability
+if [ "$SEARCHENGINE" = "elastic" ]
+then
+    echo "Waiting for Elasticsearch availability...";
+    while ! nc -z $ELASTIC_HOST $ELASTIC_PORT; do
+      sleep 0.5
+    done
+    printf "Elasticsearch started\n";
+fi
+
+# Run gunicorn
+pipenv run gunicorn config.wsgi:application --bind $DJANGO_HOST:$DJANGO_PORT &
+
 # Start the search ETL daemom
 # Rest of migrations for all django apps
 pipenv run python manage.py dbexport -d --interval 10 &
 
-pipenv run python manage.py runserver $DJANGO_HOST:$DJANGO_PORT &
 
 # Wait for any process to exit
 wait -n

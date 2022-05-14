@@ -26,6 +26,9 @@ services:
       - volume_search:/usr/share/elasticsearch/data
     networks:
       - backend
+    # this is WA for elastic api interction - INSECURE remove
+    ports:
+      - 9200:9200
 
   app:
     image: django.app.server.dev

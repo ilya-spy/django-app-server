@@ -14,7 +14,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.app
-    command: pipenv run gunicorn config.wsgi:application --bind $DJANGO_HOST:$DJANGO_PORT
     volumes:
       - volume_static:/usr/src/srv/02_movies_admin/static
     environment:

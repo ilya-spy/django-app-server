@@ -29,6 +29,7 @@ RUN mkdir -p /var/lib/django/data
 # install dependencies before copying source
 WORKDIR /usr/src/srv/02_movies_admin
 RUN chown app:app -R /usr/src/srv
+RUN chown app:app -R /var/lib/django/data
 
 ENV ALLOWED_HOSTS 127.0.0.1
 USER app

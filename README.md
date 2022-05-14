@@ -14,7 +14,12 @@ Good luck in exploring django-app-server!
 `docker-compose build --force-rm --no-cache`
 
 #### Incremental build bundle
+You can incrementally build individual containers, or even the entire dev/prod composer bundles.
+There is no need to bring container down, Docker will automatically compute affected services and recreate it.
+During the incremental build, Docker may leave unnamed orphaned images from previous builds. Use prune command below to clean up  
+
 `docker-compose build`
+`docker image prune -f`
 
 #### Run build stages and development server (local environment)
 `docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d [ --build ]`
